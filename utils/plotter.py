@@ -61,18 +61,25 @@ def plot_confusion_matrix(cm, classes=None, norm=True, title='Confusion matrix',
     if classes is not None:
         heatmap_kwargs['xticklabels']=classes
         heatmap_kwargs['yticklabels']=classes
-    if ax is not None:
-        heatmap_kwargs['ax'] = ax
+    if ax is None:
+        ax = plt.gca()
+    heatmap_kwargs['ax'] = ax
     heatmap_kwargs.update(kwargs)
     sns.heatmap(**heatmap_kwargs)
-    plt.title(title)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    ax.set_title(title)
+    ax.set_ylabel('True label')
+    ax.set_xlabel('Predicted label')
 	
 	
 def scatter_jitter(arr1, arr2, jitter=0.2):
-    """ Plots a joint scatter plot of two arrays by adding small noise to each example. 
-    Noise is proportional to variance in each dimension. """
+    """
+     Plots a joint scatter plot of two arrays by adding small noise to each example. 
+     The noise is proportional to variance in each dimension.
+     
+     :param arr1:   1D numpy array containing the first data-variable (will be plotted along x-axis)
+     :param arr2:   1D numpy array containing the second data-variable (will be plotted along y-axis)
+     :param jitter: Amount of noise to add: this is a proportion (0 to 1) of the variance in each dimension
+    """
     arr1 = np.asarray(arr1)
     arr2 = np.asarray(arr2)
     arr1 = arr1 + jitter*arr1.std(axis=0)*np.random.standard_normal(arr1.shape)
