@@ -44,7 +44,7 @@ print(news_raw.describe())
 
 #========== Question 1.4 --- [8 marks] ==========
 
-#
+
 # list = []
 #
 # for i in range(4):
@@ -78,61 +78,87 @@ print(news_raw.describe())
 
 #正态分布，中位数+-3方差
 
-# news_preClean = news_raw.copy()
+news_preClean = news_raw.copy()
 
-#
-# for column in news_preClean.columns:
-#     if column == 'class':
-#         break
-#
-#     columnMedian = news_preClean[column].median()
-#     columnStd = news_preClean[column].std()
-#     colomnFrame = news_preClean[column]
-#     for i in range(len(news_preClean[column])):
-#
-#         value = news_preClean[column].iloc[i]
-#
-#         if (value < columnMedian - 3 * columnStd) or (value > columnMedian + 3 * columnStd):
-#             news_preClean[column].iloc[i] = -1
-#
-#
-# news_preClean = news_preClean[news_preClean > 0]
-#
-# news_clean = news_preClean.dropna(axis=0, how='any')
+outliers = {}
 
-# news_clean = news_preClean.drop(axis=0,index=dropOutliersData)
-# print(news_clean.describe())
-# print(news_clean.shape)
-# # print(news_clean.values.std())
-#
-# firstHalfDataList = []
-# secondHalfDataList = []
-#
-# for i in range(len(news_clean.columns) - 1):
-#     singleFeatureData = list(news_clean[news_clean.columns[i]])
-#     if i < (len(news_clean.columns) - 1) / 2:
-#         firstHalfDataList.extend(singleFeatureData)
-#     else:
-#         secondHalfDataList.extend(singleFeatureData)
-# # print(len(firstHalfDataList))
-# # print(len(secondHalfDataList))
-#
-#
-#
-# plt.figure()
-# plt.subplot(1,1,1)
-# scatter_jitter(np.array(firstHalfDataList),np.array(secondHalfDataList))
-# plt.show()
+for column in news_preClean.columns:
+    if column == 'class':
+        break
+
+    columnMean = news_preClean[column].mean()
+    columnStd = news_preClean[column].std()
+    colomnFrame = news_preClean[column]
+    for i in range(len(news_preClean[column])):
+
+        value = news_preClean[column].iloc[i]
+
+        if (value < columnMean - 3 * columnStd) or (value > columnMean + 3 * columnStd):
+            news_preClean[column].iloc[i] = -1
+            outliers[i] = 1
 
 
-# print(news_clean.describe())
+news_preClean_withNan = news_preClean[news_preClean > 0]
+
+news_clean = news_preClean_withNan.dropna(axis=0, how='any')
 
 
-#========== Question 1.6 --- (LEVEL 11) --- [10 marks] ==========
+firstHalfDataList = []
+secondHalfDataList = []
+
+for i in range(len(news_clean.columns) - 1):
+    singleFeatureData = []
+
+    for value in news_clean[news_clean.columns[i]]:
+        singleFeatureData.append(value)
+
+    if i < (len(news_clean.columns) - 1) / 2:
+        firstHalfDataList.extend(singleFeatureData)
+    else:
+        secondHalfDataList.extend(singleFeatureData)
+
+plt.figure()
+plt.subplot(1,1,1)
+scatter_jitter(firstHalfDataList,secondHalfDataList)
+plt.show()
+
+print('the shape of new_clean is {}'.format(news_clean.shape))
+
+print('the outliers number is {}'.format(news_raw.shape[0] - news_clean.shape[0]))
+
+
+# ========== Question 1.6 --- (LEVEL 11) --- [10 marks] ==========
+# [Code] Visualise some of the outlier documents and some of the inlier ones.
+# [Text] Comment on the observations. Also comment on whether it is appropriate to do such cleaning on just the training data or on the entire data-set (including testing).
 
 
 
+plt.figure(figsize=(6.4,9.6))
+plt.subplot(211)
 
+plt.title('inlier')
+scatter_jitter(news_clean['w519_fashion'],news_clean['w520_sit'])
+
+plt.xlabel('w519_fashion')
+plt.ylabel('w520_sit')
+
+
+plt.subplot(212)
+
+
+indexList = list(outliers.keys())
+
+outDataFrame = news_raw.iloc[indexList,:]
+
+print(outDataFrame)
+
+plt.title('outliers')
+scatter_jitter(outDataFrame['w519_fashion'],outDataFrame['w520_sit'])
+plt.xlabel('w519_fashion')
+plt.ylabel('w520_sit')
+
+
+plt.show()
 
 
 
