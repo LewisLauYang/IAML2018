@@ -27,6 +27,8 @@ from sklearn.model_selection import train_test_split, KFold, cross_val_predict
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, r2_score, mean_squared_error
 from math import sqrt, log
+from sklearn.preprocessing import PolynomialFeatures,MinMaxScaler
+
 
 # ========== Question 1.1 --- [8 marks] ==========
 # Load the dataset train_auto_numeric.csv into a pandas DataFrame called auto_numeric. Using any suitable pandas functionality,
@@ -55,28 +57,31 @@ print(auto_numeric.head())
 
 #ignore pirce column
 
-for column in auto_numeric.columns:
-    if column == 'price':
-        break
-    correlation = auto_numeric.loc[:,column].corr(auto_numeric.loc[:,'price'])
-
-    print('the correlation between {} and price is {}'.format(column,correlation))
-
-
-# pltColumn = 3
-# pltRow = (len(auto_numeric.columns) - 1) / pltColumn
+# for column in auto_numeric.columns:
+#     if column == 'price':
+#         break
+#     correlation = auto_numeric.loc[:,column].corr(auto_numeric.loc[:,'price'])
 #
-# plt.figure(figsize=(pltColumn * 6.4, pltRow * 9.8))
+#     print('the correlation between {} and price is {}'.format(column,correlation))
+#
+# plt.figure(figsize=(15 * 3.2, 4.8))
+#
+# sns.pairplot(auto_numeric, x_vars=auto_numeric.columns.values, y_vars='price')
+#
+# plt.show()
+
 #
 #
-# sns.pairplot(auto_numeric, x_vars=auto_numeric.columns[0:-1], y_vars='price')
-
-# for i in range(len(auto_numeric.columns) - 1):
-#     ax = plt.subplot(pltRow, pltColumn, i + 1)
-#     columnName = auto_numeric.columns[i]
-#     sns.pairplot(auto_numeric, x_vars=['normalized-losses','wheel-base'], y_vars='price')
-
-
+# # pltColumn = 3
+# # pltRow = (len(auto_numeric.columns) - 1) / pltColumn
+# #
+# plt.figure(figsize=(15 * 3.2, 4.8))
+#
+# selectColumns = ['engine-size','width','length','engine-power','highway-mpg']
+#
+# sns.pairplot(auto_numeric, x_vars=selectColumns, y_vars=selectColumns)
+#
+#
 # plt.show()
 
 #wheel-base, length, width,height,city-mpg,
@@ -173,13 +178,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, test_si
 # show the predictions on the testing set by using a different marker. Finally plot also the baseline predictor (same figure). Label your axes and provide a legend.
 # [Text] Just by looking at this plot, how do the two models compare?
 
-# print(X_test)
-# print(y_test)
 # plt.figure()
 # plt.subplot(1,1,1)
 # plt.scatter(X_test, y_test, label="Test Data")
 # testY_pred = lm.predict(X=X_test)
+# baseLineList = []
+# for i in range(len(X_test)):
+#     baseLineList.append(y_train.mean())
+# baseLine = np.reshape(baseLineList, (X_test.shape[0],1))
 # plt.scatter(X_test,testY_pred, label="Test predition Data")
+# plt.plot(X_test,baseLine,label="BaseLine",color='black')
 # plt.plot(X_test,testY_pred,label="Test Regression Line",color='yellow')
 # plt.xlabel("engine-power")
 # plt.ylabel("price")
@@ -197,17 +205,44 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, test_si
 # [Text] Comment on the result. Hint: In your answer, you should discuss what the graph is showing and
 # what the two values are measuring, and finally compare the two models under all measures/plots.
 
+# plt.figure(figsize=(6.4,4.8))
+# plt.subplot(2,1,1)
 # plt.hist(y_test - testY_pred,bins=20)
 # plt.xlabel('residuals')
 # plt.ylabel('Number of Occurences of residuals')
-# plt.title('residuals of engine-power')
+# plt.title('residuals of engine-power in LinearRegression')
+# plt.yticks([2,4,6,8])
+#
+# plt.subplot(2,1,2)
+# plt.hist(y_test - baseLineList,bins=20)
+# plt.xlabel('residuals')
+# plt.ylabel('Number of Occurences of residuals')
+# plt.title('residuals of engine-power in baseLine')
+#
 # plt.show()
 #
 # r2_score = r2_score(y_test,testY_pred)
-# print('r2 score is',r2_score)
+# print('r2 score of LinearRegression is ',r2_score)
+#
+# npBaseLine = np.copy(testY_pred)
+# npBaseLine[:,] = baseLineList[0]
+# for i in  range(len(testY_pred.shape)):
+#     testY_pred[i] = 11833.339999
+#
+# print('testY_pred shape',testY_pred.shape)
+
+# basenp = np.array(baseLineList)
+#
+# print('basenp shape',basenp.shape)
+#
+# r2_score_baseLine = r2_score(y_test,npBaseLine)
+# print('r2 score of baseLine is ',r2_score_baseLine)
 #
 # mse = mean_squared_error(y_test,testY_pred)
-# print('RMSE value is',mse)
+# print('RMSE value LinearRegression is',mse)
+#
+# mse_baseLine = mean_squared_error(y_test,npBaseLine)
+# print('RMSE value LinearRegression is',mse_baseLine)
 
 
 
@@ -227,18 +262,32 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, test_si
 # [Text] Relate these to the previous results.
 
 
-kf = KFold(159, shuffle=True, random_state=0)
+# kf = KFold(159, shuffle=True, random_state=0)
 #
-# lm2 = LinearRegression()
-# y_pred2 = cross_val_predict(lm2, X_train, y=y_train, cv=kf)
+# lm2 = LinearRegression(normalize=True)
+# pred_y = cross_val_predict(lm2, X, y=y, cv=kf)
 #
+# print(y)
 #
-#
-# r2_score = r2_score(y_test,testY_pred)
+# r2_score = r2_score(np.array(y),pred_y)
 # print('r2 score is',r2_score)
 #
-# mse = mean_squared_error(y_test,testY_pred)
+# mse = mean_squared_error(np.array(y),pred_y)
 # print('RMSE value is',mse)
+
+kf = KFold(len(X), shuffle=True, random_state=0)
+#
+# lm2 = LinearRegression(normalize=True)
+# pred_y = cross_val_predict(lm2, X, y=y, cv=kf)
+#
+# r2Score = r2_score(y,pred_y)
+# print('r2 score is',r2Score)
+#
+# mse = mean_squared_error(y,pred_y)
+# print('RMSE value is',sqrt(mse))
+
+
+
 
 
 # ========== Question 2.9 --- (LEVEL 11) --- [18 marks] ==========
@@ -256,28 +305,51 @@ kf = KFold(159, shuffle=True, random_state=0)
 # auto_base = pd.read_csv(data_path,delimiter=',')
 #
 #
-# X = auto_base['engine-power']
-# y = auto_base['price']
+# X_base = auto_base['engine-power']
+# y_base = auto_base['price']
 #
-# X = np.reshape(X.values, (X.shape[0],1))
+# X_base = np.reshape(X_base.values, (X_base.shape[0],1))
 #
-# lr = LinearRegression()
+# lm3 = LinearRegression(normalize=True)
 #
-# lr.fit(X=X,y=y)
+# lm3.fit(X=X_base,y=y_base)
 #
-# print(X_test)
+# pred_y_base = lm3.predict(X=X_test)
 #
-# preditionY = lr.predict(X=X_test)
 #
-# print('preditionY',preditionY)
-#
-# r2Score = r2_score(y_test,preditionY)
+# r2Score = r2_score(y_test,pred_y_base)
 # print('r2 score is',r2Score)
 #
-# mse = mean_squared_error(y_test,preditionY)
-# print('RMSE value is',mse)
-
-
+# mse = mean_squared_error(y_test,pred_y_base)
+# rmse = sqrt(mse)
+# print('RMSE value is',rmse)
+#
+#
+# plt.figure(figsize=(12.8,14.4))
+# plt.subplot(2,1,1)
+# plt.scatter(X_test, y_test, label="Test Data")
+# #build the baseLine
+# base_baseLineList = []
+# for i in range(len(X_test)):
+#     base_baseLineList.append(y_base.mean())
+# base_baseLine = np.reshape(base_baseLineList, (X_test.shape[0],1))
+# plt.scatter(X_test,pred_y_base, label="Test predition Data")
+#
+# plt.plot(X_test,pred_y_base,label="Test Regression Line",color='yellow',linewidth=3)
+#
+# plt.plot(X_test,base_baseLine,label="BaseLine",color='black',linestyle='--',alpha=0.5)
+#
+# plt.xlabel("engine-power")
+# plt.ylabel("price")
+# plt.legend()
+#
+# plt.subplot(2,1,2)
+# plt.hist(y_test - base_baseLineList,bins=20)
+# plt.xlabel('residuals')
+# plt.ylabel('Number of Occurences of residuals')
+# plt.title('residuals of engine-power in baseLine')
+#
+# plt.show()
 
 
 
@@ -295,19 +367,24 @@ kf = KFold(159, shuffle=True, random_state=0)
 # [Text] Comment on the result, and compare with the univariate linear regression model we trained previously (Question 2.5).
 
 
-# lm = LinearRegression(normalize=True)
-# X = auto_numeric.drop(['price'], axis=1)
-# y = auto_numeric['price']
-# y_pred = cross_val_predict(lm, X, y=y, cv=kf)
-#
-# print(y_pred)
-#
+# lm4 = LinearRegression(normalize=True)
+# X1 = auto_numeric.drop(['price'], axis=1)
+# y_pred = cross_val_predict(lm4, X=X1, y=y, cv=kf)
 #
 # r2Score = r2_score(y,y_pred)
 # print('r2 score is',r2Score)
 #
 # mse = mean_squared_error(y,y_pred)
 # print('RMSE value is',mse)
+
+# The more complex model has stronger linearity and lower average erros, as demonstrated by higher R^2 and CC values and lower RMSE and MAE values.
+# This is the strongest advantageof the more complex model: it considers more of the training data so as long as
+# it doesn't overfit the model will likely better predict unseen values. ' \
+# Besides additional computational requirements, the main disadvantage of multivariate regression is how easy the results are to explain.
+# With a single regressor, even a transformed one, the logic is easy to follow -- a similar advantage that decision trees show. With a multivariate linear model,
+# there are dangers of multicollinearity. For statistical reasons that I don't think it necessary to detail here, the weight on ' \
+# 'an individual regressor (attribute) does not actually represent that regressor's independent relationship with the target, which makes the full model difficult to explain
+# and interpret in a way that is not strictly mathematical.
 
 
 
@@ -336,14 +413,16 @@ kf = KFold(159, shuffle=True, random_state=0)
 # [Code] Then retrain a (Multi-variate) LinearRegression Model (on all the attributes including the transformed engine-size) and report $R^2$ and RMSE.
 # [Text] How has the performance of the model changed when compared to the previous result? and why so significantly?
 
-# for i in range(len(auto_numeric['engine-size'])):
-#     value = auto_numeric['engine-size'].iloc[i]
-#     value = log(value, 2)
-#     auto_numeric['engine-size'].iloc[i] = value
-#
+transAuto_auto_numeric = auto_numeric.copy()
+
+for i in range(len(transAuto_auto_numeric['engine-size'])):
+    value = transAuto_auto_numeric['engine-size'].iloc[i]
+    value = log(value, 2)
+    transAuto_auto_numeric['engine-size'].iloc[i] = value
+
 # plt.figure()
 # plt.subplot(1,1,1)
-# plt.scatter(auto_numeric['engine-size'],auto_numeric['price'])
+# plt.scatter(transAuto_auto_numeric['engine-size'],transAuto_auto_numeric['price'])
 # plt.xlabel('engine-size')
 #
 # plt.ylabel('price')
@@ -351,19 +430,20 @@ kf = KFold(159, shuffle=True, random_state=0)
 # plt.show()
 #
 #
-# lm = LinearRegression(normalize=True)
-# X = auto_numeric.drop(['price'], axis=1)
-# y = auto_numeric['price']
-# y_pred = cross_val_predict(lm, X, y=y, cv=kf)
 #
-# print(y_pred)
-#
-#
-# r2Score = r2_score(y,y_pred)
-# print('r2 score is',r2Score)
-#
-# mse = mean_squared_error(y,y_pred)
-# print('RMSE value is',mse)
+X2 = transAuto_auto_numeric.drop(['price'], axis=1)
+y2 = transAuto_auto_numeric['price']
+lm4 = LinearRegression(normalize=True)
+lm4.fit(X=X2,y=y2)
+y_pred4 = cross_val_predict(lm4, X2, y=y2, cv=kf)
+
+
+r2Score = r2_score(y2,y_pred4)
+print('r2 score is',r2Score)
+
+mse = mean_squared_error(y2,y_pred4)
+rmse = sqrt(mse)
+print('RMSE value is',rmse)
 
 
 
@@ -376,49 +456,152 @@ kf = KFold(159, shuffle=True, random_state=0)
 # Tip: To simplify matters, you may abuse standard practice and train the model once on the entire data-set with no validation/test set.
 # [Text] Which are the three (3) most important features for predicting price under this model?
 
-#Stepwise regression
+# Stepwise regression
 
-X = auto_numeric.drop('price',axis=1)
-y = auto_numeric['price']
+# stepData = transAuto_auto_numeric.copy()
+#
+# step_X = stepData.drop('price',axis=1)
+#
+# step_y = stepData['price']
+#
+# XColumns = step_X.columns.values
+#
+# kf = KFold(len(step_X), shuffle=True, random_state=0)
+#
+# r2ScoreDic = {}
+# dropDic = {}
+#
+#
+# for i in range(len(step_X)):
+#
+#     tempScoreDic = {}
+#     for column in XColumns:
+#         #train each attribute and compare r2Score
+#         #selectMax
+#
+#         if (column not in r2ScoreDic.keys()) and (column not in dropDic.keys()):
+#
+#
+#             trainColums = []
+#             if len(r2ScoreDic.keys()) == 0:
+#                 trainX = step_X[column]
+#                 trainX = np.reshape(trainX.values, (trainX.shape[0], 1))
+#             else:
+#                 trainColums = list(r2ScoreDic.keys())
+#                 trainColums.append(column)
+#                 trainX = step_X[trainColums]
+#             lr = LinearRegression(normalize=True)
+#             lr.fit(X=trainX, y=step_y)
+#             pred_y = cross_val_predict(lr,trainX,y=step_y,cv=kf)
+#             score = r2_score(step_y, pred_y)
+#             tempScoreDic[column] = score
+#
+#     if len(tempScoreDic.keys()) != 0:
+#         sortedTempList = sorted(tempScoreDic.items(),key = lambda d:d[1],reverse=True)
+#         key,value = sortedTempList[0]
+#         if len(r2ScoreDic.values()) == 0:
+#             r2ScoreDic[key] = value
+#         else:
+#             if value > max(r2ScoreDic.values()):
+#                 r2ScoreDic[key] = value
+#             else:
+#                 dropDic[key] = value
+#
+# print('attributes which can rise the R2 score : ',r2ScoreDic)
+# print('attributes which may reduce the R2 score : ',dropDic)
+# print(len(r2ScoreDic) + len(dropDic))
 
-XColumns = X.columns.values
-
-print(XColumns)
-
-r2ScoreDic = {}
 
 
+nonline_data_path = os.path.join(os.getcwd(),'datasets','train_auto_nonlinear.csv')
+train_auto_nonlinear = pd.read_csv(nonline_data_path,delimiter=',')
 
-for i in range(len(X)):
-
-    tempScoreDic = {}
-    for column in XColumns:
-        #train each attribute and compare r2Score
-        #selectMax
-
-        if column not in r2ScoreDic.keys():
+X6 = train_auto_nonlinear.drop('price',axis=1)
+y6 = train_auto_nonlinear['price']
 
 
-            trainColums = []
-            if len(r2ScoreDic.keys()) == 0:
-                trainX = auto_numeric[column]
-                trainX = np.reshape(trainX.values, (trainX.shape[0], 1))
-            else:
-                trainColums = list(r2ScoreDic.keys())
-                trainColums.append(column)
-                trainX = auto_numeric[trainColums]
+min_max_scaler = MinMaxScaler()
+X_minMax = min_max_scaler.fit_transform(X6)
 
-            lr = LinearRegression(normalize=True)
-            lr.fit(trainX, y)
-            pred_y = lr.predict(X=trainX)
-            score = r2_score(y, pred_y)
-            tempScoreDic[column] = score
+lm6 = LinearRegression(normalize=True)
+lm6.fit(X=X6,y=y6)
+y_pred6 = cross_val_predict(lm6, X6, y=y6, cv=kf)
 
-    sortedTempList = sorted(tempScoreDic.items(),key = lambda d:d[1],reverse=True)
-    key,value = sortedTempList[0]
-    r2ScoreDic[key] = value
-    print(r2ScoreDic)
-    print(len(r2ScoreDic))
+
+r2Score = r2_score(y6,y_pred6)
+print('r2 score is',r2Score)
+
+mse = mean_squared_error(y6,y_pred6)
+rmse = sqrt(mse)
+print('RMSE value is',rmse)
+
+
+
+# ========== Question 3.5 --- (LEVEL 11) --- [10 marks] ==========
+# In the lectures we discussed another form of extension to the basic linear-regression model: the introduction of basis functions. This method attempts to capture non-linearities in the input-output mapping.
+#
+# [Text] How would you choose the features to test higher-orders on? And how would you choose the best polynomial order for these features?
+# [Code] Load the csv file train_auto_nonlinear.csv into a new dataframe (this is a standard version of the transformed data-set from Question 3.3). Add a second-order basis to the two attributes length and engine-power and train a new LinearRegression model. Report the  R2  and RMSE performance.
+# [Text] Comment on the result in relation to those in Question 3.3.
+
+
+# nonline_data_path = os.path.join(os.getcwd(),'datasets','train_auto_nonlinear.csv')
+# train_auto_nonlinear = pd.read_csv(nonline_data_path,delimiter=',')
+#
+# X5 = train_auto_nonlinear.drop('price',axis=1)
+# y = train_auto_nonlinear['price']
+#
+# poly = PolynomialFeatures(degree=2)
+#
+#
+# x_train_poly = poly.fit_transform(X5.loc[:,['length','engine-power']])
+#
+# X_length_engine = X5.copy()
+# X_length_engine = X_length_engine.drop(['length','engine-power'],axis=1)
+#
+# for i in range(x_train_poly.shape[1]):
+#     #the column name is not import,here just calculate the result
+#     X_length_engine.insert(0,'polynomialData{}'.format(i),x_train_poly[:,i:i+1])
+#
+# lm5 = LinearRegression()
+# lm5.fit(X=X_length_engine,y=y)
+# y_pred5 = cross_val_predict(lm5, X_length_engine, y=y, cv=kf)
+#
+#
+#
+# r2Score = r2_score(y,y_pred5)
+# print('r2 score of attributes length and engine-power is',r2Score)
+#
+# mse = mean_squared_error(y,y_pred5)
+# rmse = sqrt(mse)
+# print('RMSE value of attributes length and engine-power is',rmse)
+#
+#
+# print("##################################################")
+#
+# x_train_poly1 = poly.fit_transform(X5.loc[:,['normalized-losses','wheel-base']])
+#
+# X_wheel_base = X5.copy()
+# X_wheel_base = X_wheel_base.drop(['normalized-losses','wheel-base'],axis=1)
+#
+# for i in range(x_train_poly1.shape[1]):
+#     #the column name is not import,here just calculate the result
+#     X_wheel_base.insert(0,'polynomialData{}'.format(i),x_train_poly1[:,i:i+1])
+#
+# lm5 = LinearRegression()
+# lm5.fit(X=X_wheel_base,y=y)
+# y_pred5 = cross_val_predict(lm5, X_wheel_base, y=y, cv=kf)
+#
+#
+#
+# r2Score = r2_score(y,y_pred5)
+# print('r2 score of attributes normalized-losses and wheel-base is',r2Score)
+#
+# mse = mean_squared_error(y,y_pred5)
+# rmse = sqrt(mse)
+# print('RMSE value of attributes normalized-losses and wheel-base is',rmse)
+
+
 
 
 
