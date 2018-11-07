@@ -176,3 +176,4 @@ def plot_voronoi(predictor, _range, sampling=100, clr_map='Set1'):
     # Plot 
     return plt.imshow(zz, interpolation='nearest', extent=_range, aspect='auto', origin='lower', 
                       alpha=.5, cmap=cmap, vmin=-0.5, vmax=_N-0.5)
+
