@@ -20,6 +20,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import KFold
 from sklearn.svm import LinearSVC, SVC
+from utils import plotter
 
 data_path = os.path.join(os.getcwd(), 'datasets', 'Images_A_Train.csv')
 image_train = pd.read_csv(data_path,delimiter=',')
@@ -51,7 +52,7 @@ print(image_train_isPerson.describe())
 #   (b) [Code] Using similar methods to Q1.1 verify that the testing set is similar to the training set.
 #   (c) [Text] Indicate the dimensionality, and comment on any discrepancies if any (if they are similar, just say so).
 
-data_path = os.path.join(os.getcwd(), 'datasets', 'Images_A_Validate.csv')
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_A_Test.csv')
 image_test = pd.read_csv(data_path,delimiter=',')
 
 image_test_features = image_test.iloc[:,1:501]
@@ -135,10 +136,10 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #   (b) [Text] Comment on the performance of the Logistic Regressor in comparison with the baseline model.
 #   (c) [Code] Visualise the errors using an appropriate method to justify your answer to (c).
 #   (d) [Text] Referring back to the observations in Q1.1, and assuming that we know that the features should be informative, why do you think this may be happening?
-lr = LogisticRegression(solver='lbfgs')
-lr.fit(image_train_features, image_train_isPerson)
-test_predit = lr.predict(X=image_test_features)
-print('Classification accuracy on test set: {:.3f}'.format(lr.score(image_test_features, image_test_isPerson)))
+# lr = LogisticRegression(solver='lbfgs')
+# lr.fit(image_train_features, image_train_isPerson)
+# test_predit = lr.predict(X=image_test_features)
+# print('Classification accuracy on test set: {:.3f}'.format(lr.score(image_test_features, image_test_isPerson)))
 
 #和baseline一样
 
@@ -222,20 +223,20 @@ print('Classification accuracy on test set: {:.3f}'.format(lr.score(image_test_f
 #交叉验证能够进行多次训练和验证，而使用测试数据只进行一次验证，交叉验证的准确率更高。
 
 
-data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Train.csv')
-train_data = pd.read_csv(data_path,delimiter=',')
-
-X_train = train_data.iloc[:,0:500]
-
-y_train = train_data['is_person']
-
-
-data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Test.csv')
-test_data = pd.read_csv(data_path,delimiter=',')
-
-X_test = test_data.iloc[:,0:500]
-
-y_test = test_data['is_person']
+# data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Train.csv')
+# train_data = pd.read_csv(data_path,delimiter=',')
+#
+# X_train = train_data.iloc[:,0:500]
+#
+# y_train = train_data['is_person']
+#
+#
+# data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Test.csv')
+# test_data = pd.read_csv(data_path,delimiter=',')
+#
+# X_test = test_data.iloc[:,0:500]
+#
+# y_test = test_data['is_person']
 
 # number = 20
 # splits = 5
@@ -348,14 +349,147 @@ RandomForestClassifier
 #   (b) [Text] Explain (intuitively) the shape of the decision boundary for each classifier (i.e. comment on what aspect of the kernel gives rise to it). Use this to comment on how it relates to classification accuracy.
 #
 
-X_svm = X_train.iloc[:,20:51]
-y_svm = y_train.iloc[:,20:51]
+# X_dim21 = X_train['dim21']
+# X_dim51 = X_train['dim51']
+# y_svm = y_train
+#
+# X_21_and_51 = np.array([X_dim21,X_dim51])
+# X_21_and_51 = X_21_and_51.T
+#
+# print(X_21_and_51)
+#
+#
+# svc_linear = SVC(kernel="linear",C=1).fit(X=X_21_and_51, y=y_svm)
+# svc_rbf = SVC(kernel="rbf",gamma='auto',C=1).fit(X=X_21_and_51, y=y_svm)
+# svc_poly = SVC(kernel="poly",degree=2,C=1).fit(X=X_21_and_51, y=y_svm)
+#
+# print(svc_linear.score(X=X_21_and_51, y=y_svm))
+# print(svc_rbf.score(X=X_21_and_51, y=y_svm))
+# print(svc_poly.score(X=X_21_and_51, y=y_svm))
+#
+# plotter.plot_SVM_DecisionBoundary(clfs=[svc_linear,svc_rbf,svc_poly],X=X_21_and_51,y=y_svm,
+#                                   title=['linear','rbf','polynomial'],
+#                                   labels=['dim21','dim51'])
+# plt.show()
 
-print(X_svm)
 
-svc_linear = SVC(kernel="linear").fit(X=X_svm, y=y_tr)
-svc_rbf = SVC(kernel="rbf",gamma='auto').fit(X=X_tr, y=y_tr)
-svc_poly = SVC(kernel="poly",degree=2).fit(X=X_tr, y=y_tr)
+#核函数
+
+
+# ========== Question 2.7 --- [14 marks] ==========
+# Let us now explore the polynomial SVM further. We will go back to using the FULL dataset (i.e. the one we loaded in Question 2.4). There are two parameters we need to tune: the order of the polynomial and the regression coefficient. We will do this by way of a grid-search over parameters. To save computational time, we will use a constrained search space:
+#
+#   (a) [Code] Define an appropriate search space for C in the range 1e-2 to 1e3 using 6-steps (think about the step-size), and for the degree in the range 1 through 5 inclusive (5 steps). Using the K-fold iterator from Q2.5, optimise the values for C and the degree in the above specified range. Keep track of the mean cross-validation accuracy for each parameter combination.
+#   (b) [Code] Using a seaborn heatmap, plot the fold-averaged classification accuracy for each parameter combination (label axes appropriately). Finally also report the combination of the parameters which yielded the best accuracy.
+#   (c) [Code] Retrain the (polynomial-kernel) SVC using the optimal parameters found in (b) and report its accuracy on the Testing set.
+#   (d) [Text] Explain the results relative to the Logistic Classifier.
+
+# step_number = 6
+# degreeStepNumber = 5
+#
+# accuracy_array = np.ndarray((degreeStepNumber,step_number))
+# print(accuracy_array.shape)
+#
+# stepArray = np.logspace(start=-2, stop=3, num=step_number)
+#
+# degreeStepArray = np.linspace(start=1, stop=5, num=degreeStepNumber)
+#
+#
+#
+# C_index = 0
+# for C in stepArray:
+#     degree_index = 0
+#     for degree in degreeStepArray:
+#         scores = []
+#         for kf_train_indexes, kf_test_indexes in kf.split(X_train):
+#             svc_poly = SVC(kernel="poly", degree=degree, C=C)
+#             svc_poly.fit(X=X_train.loc[kf_train_indexes],y = y_train.loc[kf_train_indexes])
+#             svc_score = svc_poly.score(X=X_train.loc[kf_test_indexes], y=y_train.loc[kf_test_indexes])
+#             scores.append(svc_score)
+#         mean_score = np.mean(scores,axis=0)
+#         accuracy_array[degree_index,C_index] = mean_score
+#         degree_index+=1
+#         print()
+#     C_index +=1
+#
+# plt.figure()
+#
+# sns.heatmap(accuracy_array,xticklabels=stepArray,yticklabels=degreeStepArray,vmin=0.,vmax=1.,annot=True)
+#
+# plt.xlabel('C')
+# plt.ylabel('degree')
+# # plt.semilogx()
+# plt.show()
+
+# svc_poly = SVC(kernel="poly", degree=1, C=1.0)
+# svc_poly.fit(X=X_train, y=y_train)
+# svc_score = svc_poly.score(X=X_test, y=y_test)
+#
+# print("Accuracy of svc_poly:",svc_score)
+
+#########
+
+# Mini challenge
+
+
+#Logistic Regression
+
+
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_C_Train.csv')
+train_data = pd.read_csv(data_path,delimiter=',')
+
+X_train = train_data.iloc[:,1:501]
+
+y_train = train_data['is_person']
+
+
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_C_Validate.csv')
+train_data = pd.read_csv(data_path,delimiter=',')
+
+X_valid = train_data.iloc[:,1:501]
+
+y_valid = train_data['is_person']
+
+
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_C_Test.csv')
+test_data = pd.read_csv(data_path,delimiter=',')
+
+X_test = test_data.iloc[:,0:500]
+
+y_test = test_data['is_person']
+
+
+
+Csteps = np.logspace(start=-5, stop=5, num=100)
+
+scores = []
+
+for C in Csteps:
+    print(C)
+    lr = LogisticRegression(solver="lbfgs", C=C)
+    lr.fit(X=X_train,y = y_train)
+    lr_score = lr.score(X=X_valid, y=y_valid)
+    scores.append(lr_score)
+
+index = np.argwhere(scores == max(scores))
+
+plt.figure()
+
+plt.semilogx()
+plt.plot(Csteps,scores)
+
+plt.show()
+
+print('最大值',scores[index[0][0]])
+
+print('最大值C',Csteps[index[0][0]])
+
+
+
+
+
+
+
 
 
 
