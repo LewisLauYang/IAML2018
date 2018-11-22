@@ -44,8 +44,8 @@ print(data_set.shape)
 print(data_set.head())
 
 
-#the column 1 - 64 represent the pixel, one column represent one pixel.
-#each row represent one image
+# the column 1 - 64 represent the pixel, one column represent one pixel.
+# each row represent one image
 # the target_data represent the true number of the image.
 
 
@@ -88,17 +88,14 @@ print(data_set.head())
 # ========== Question 2.1 --- [16 marks] ==========
 
 
-pca = PCA(n_components=data_set.shape[1],svd_solver='full')
-pca = pca.fit(data_set)
-# print(pca.explained_variance_ratio_)
-# print(pca.explained_variance_ratio_.shape)
+# pca = PCA(n_components=data_set.shape[1],svd_solver='full')
+# pca = pca.fit(data_set)
 #
 # plt.figure()
 # fig, ax1 = plt.subplots()
 # ax2 = ax1.twinx()
 #
 # X = np.arange(0,64)
-# print(X)
 #
 # explained_variance_ratio = pca.explained_variance_ratio_
 #
@@ -207,41 +204,57 @@ pca = pca.fit(data_set)
 
 # ========== Question 2.4 --- (LEVEL 11) --- [18 marks] ==========
 
-kf = KFold(n_splits=5,random_state=0)
-svc_linear = SVC(kernel="linear",C=1).fit(X=data_set, y=target_data)
-pca_data = pca.transform(data_set)
-min_max_scaler = MinMaxScaler()
-pca_data = min_max_scaler.fit_transform(pca_data)
+kf = KFold(n_splits=5,random_state=0,shuffle=True)
+svc_linear = SVC(kernel="linear")
 
-# scores = []
-# pca_scores = []
+pca = PCA(n_components=data_set.shape[1])
+pca_data = pca.fit_transform(data_set)
+
+scores = []
+pca_scores = []
+for kf_train_indexes, kf_test_indexes in kf.split(data_set):
+    svc_linear.fit(X=data_set.loc[kf_train_indexes],y=target_data[kf_train_indexes])
+    svc_score = svc_linear.score(X=data_set.loc[kf_test_indexes],y=target_data[kf_test_indexes])
+
+    scores.append(svc_score)
+
+    svc_linear.fit(X=pca_data[kf_train_indexes],y=target_data[kf_train_indexes])
+    svc_score = svc_linear.score(X=pca_data[kf_test_indexes],y=target_data[kf_test_indexes])
+
+    pca_scores.append(svc_score)
+
+
+
+print('mean acc for raw data',np.mean(scores))
+print('mean acc for PCA-transformed data',np.mean(pca_scores))
+#
+
+# nbScore = []
+# pca_nbScore = []
+# gaussianNB = GaussianNB()
 # for kf_train_indexes, kf_test_indexes in kf.split(data_set):
-#     svc_linear.fit(X=data_set.loc[kf_train_indexes],y=target_data[kf_train_indexes])
-#     svc_score = svc_linear.score(X=data_set.loc[kf_test_indexes],y=target_data[kf_test_indexes])
+#     gaussianNB.fit(X=data_set.loc[kf_train_indexes],y=target_data[kf_train_indexes])
+#     multScore = gaussianNB.score(X=data_set.loc[kf_test_indexes],y=target_data[kf_test_indexes])
+#     nbScore.append(multScore)
 #
-#     scores.append(svc_score)
+#     gaussianNB.fit(X=pca_data[kf_train_indexes],y=target_data[kf_train_indexes])
+#     multScore = gaussianNB.score(X=pca_data[kf_test_indexes],y=target_data[kf_test_indexes])
+#     pca_nbScore.append(multScore)
 #
-#     svc_linear.fit(X=pca_data[kf_train_indexes],y=target_data[kf_train_indexes])
-#     svc_score = svc_linear.score(X=pca_data[kf_test_indexes],y=target_data[kf_test_indexes])
-#
-#     pca_scores.append(svc_score)
-#
-#
-# 
-# print('mean acc for raw data',np.mean(scores))
-# print('mean acc for PCA-transformed data',np.mean(pca_scores))
-#
+# print('mean acc for raw data',np.mean(nbScore))
+# print('mean acc for PCA-transformed data',np.mean(pca_nbScore))
+
 
 nbScore = []
 pca_nbScore = []
+gaussianNB = GaussianNB()
 for kf_train_indexes, kf_test_indexes in kf.split(data_set):
-    multNB = MultinomialNB()
-    multNB.fit(X=data_set.loc[kf_train_indexes],y=target_data[kf_train_indexes])
-    multScore = multNB.score(X=data_set.loc[kf_test_indexes],y=target_data[kf_test_indexes])
+    gaussianNB.fit(X=data_set.loc[kf_train_indexes],y=target_data[kf_train_indexes])
+    multScore = gaussianNB.score(X=data_set.loc[kf_test_indexes],y=target_data[kf_test_indexes])
     nbScore.append(multScore)
 
-    multNB.fit(X=pca_data[kf_train_indexes],y=target_data[kf_train_indexes])
-    multScore = multNB.score(X=pca_data[kf_test_indexes],y=target_data[kf_test_indexes])
+    gaussianNB.fit(X=pca_data[kf_train_indexes],y=target_data[kf_train_indexes])
+    multScore = gaussianNB.score(X=pca_data[kf_test_indexes],y=target_data[kf_test_indexes])
     pca_nbScore.append(multScore)
 
 print('mean acc for raw data',np.mean(nbScore))

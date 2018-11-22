@@ -39,11 +39,11 @@ y = pd.Series(np.array(cats)[newsgroups_train.target])
 # print(y.shape)
 # print(y[0:10])
 
-#X is the features, and have 1000 columns(1000 words), each word represent one feature,and the value of X
-#is the tf-idf weights of each word. each row represent the features in one article
-#y is the target label of X, each row means the type of the article
+# X is the features, and have 1000 columns(1000 words), each word represent one feature,and the value of X
+# is the tf-idf weights of each word. each row represent the features in one article
+# y is the target label of X, each row means the type of the article
 
-#If you simply use the frequency of times, then the weight of some high-frequency words will be even greater.
+# If you simply use the frequency of times, then the weight of some high-frequency words will be even greater.
 # TF-IDF tends to filter out common words and retain important words
 
 
@@ -56,9 +56,9 @@ y = pd.Series(np.array(cats)[newsgroups_train.target])
 # For reproducability, set random_state=1000 -- keep other arguments at default values. Keep track of the k-means object created.
 
 #a)
-#Use this algorithm for the same batch of data, the final result is not necessarily the same
-#Because each initial average is not necessarily the same
-#The final result may be a local optimal solution
+# Use this algorithm for the same batch of data, the final result is not necessarily the same
+# Because each initial average is not necessarily the same
+# The final result may be a local optimal solution
 
 #b)because there are five labels of y, so the reasonable number of clusters is 5
 
@@ -72,7 +72,7 @@ kmeans.fit(X)
 #   (b) [Code] Compute (and display) the Adjusted Rand Index of the fitted model.
 #   (c) [Text] Comment (1 or 2 sentences) on the quality of the fit as expressed by this measure.
 
-#measures the similarity of the two assignments,The value is between [-1,1],
+# measures the similarity of the two assignments,The value is between [-1,1],
 # the negative number means the result is not good, the closer to 1 the better
 # ARI need the ture labels to measures the similarity
 
@@ -81,7 +81,7 @@ ARI = adjusted_rand_score(y_pred,y)
 print('Adjusted Rand Index is', ARI)
 
 
-#as I mentioned that the score is the closer to 1 the better.
+# as I mentioned that the score is the closer to 1 the better.
 # the score is about 0.2. This score is not particularly satisfactory and it can be improved
 
 
@@ -112,8 +112,8 @@ print('Adjusted Rand Index is', ARI)
 
 
 
-#inertia is used to evaluate whether the number of clusters is appropriate. The smaller the distance, the better the clustering.
-#how,it has two drawbacks one is that clusters are assumpted be convex and isotropic, another is that In high dimensional space, the Euclidean distance will become inflated.
+# inertia is used to evaluate whether the number of clusters is appropriate. The smaller the distance, the better the clustering.
+# how,it has two drawbacks one is that clusters are assumpted be convex and isotropic, another is that In high dimensional space, the Euclidean distance will become inflated.
 # just like this case, there are 1000 features
 
 
@@ -149,7 +149,7 @@ print('Adjusted Rand Index is', ARI)
 #   (e) [Code] Fit a 5-cluster K-Means object to the data with the dimensionality that produced the best ARI. In a similar manner to Question 2.3, plot a bar-chart of the number of data-points from each class assigned to each cluster. N.B: Remember to set random_state=1000 for both PCA and K-Means objects, and label all your diagrams.
 #   (f) [Text] Compare the clustering distribution in (e) and in Question 2.3 (a). Hint: comment briefly (1 to 2 sentences) on the distribution of classes.
 
-#Because all features are of certain importance and cannot be abandoned
+# Because all features are of certain importance and cannot be abandoned
 
 # components = np.logspace(start=0,stop=3,num=10)
 #
@@ -165,11 +165,11 @@ print('Adjusted Rand Index is', ARI)
 #     pca_ARI = adjusted_rand_score(y,y_pca_pred)
 #     scores.append(pca_ARI)
 #     print('component is: {} adjusted_rand_score is:{}'.format(component,pca_ARI))
+
 #
-#
-# # As can be seen from the figure, the effect is best when n_component is 2, and the effect is second when ARI is 0.268. When n_component is 4, the ARI is 0.234.
-# # The reduction in the dimensions of other values does not work better than when there is no reduction.
-#
+# As can be seen from the figure, the effect is best when n_component is 2, and the effect is second when ARI is 0.268. When n_component is 4, the ARI is 0.234.
+# The reduction in the dimensions of other values does not work better than when there is no reduction.
+
 # plt.figure()
 #
 # ax = sns.scatterplot(x = components, y=scores)
@@ -255,7 +255,7 @@ plt.scatter(centroids[:, 0], centroids[:, 1],s=70,color='w', zorder=10)
 
 plt.legend()
 
-xy = (centroids[0,0],centroids[0,1])
+# xy = (centroids[0,0],centroids[0,1])
 
 # plt.annotate('rec.sport.hockey',
 #              xy=(centroids[0,0],centroids[0,1]),

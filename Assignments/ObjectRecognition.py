@@ -81,32 +81,32 @@ image_test_isPerson = image_test['is_person']
 #   (c) [Text] Do you envision any problems with the distribution under both sets? Would classification accuracy be a good metric for evaluating the performance of the classifiers? Why or why not?
 #
 
-# X_tr = image_train_features.values;
-# X_tst = image_test_features.values;
-# y_tr = image_train_isPerson.values;
-# y_tst = image_test_isPerson.values;
-#
-# print(X_tr.shape)
-# print(X_tst.shape)
-# print(y_tr.shape)
-# print(y_tst.shape)
-#
-# plt.figure()
-#
-# plt.subplot(121)
-#
-# ax1 = sns.countplot(x=y_tr)
-# ax1.set_title('Train Data')
-# ax1.set_xticklabels(['is not person','is person'])
-#
-# plt.subplot(122)
-#
-# ax2 = sns.countplot(x=y_tst)
-#
-# ax2.set_title('Test Data')
-# ax2.set_xticklabels(['is not person','is person'])
-#
-# plt.show()
+X_tr = image_train_features.values;
+X_tst = image_test_features.values;
+y_tr = image_train_isPerson.values;
+y_tst = image_test_isPerson.values;
+
+print(X_tr.shape)
+print(X_tst.shape)
+print(y_tr.shape)
+print(y_tst.shape)
+
+plt.figure()
+
+plt.subplot(121)
+
+ax1 = sns.countplot(x=y_tr)
+ax1.set_title('Train Data')
+ax1.set_xticklabels(['is not person','is person'])
+
+plt.subplot(122)
+
+ax2 = sns.countplot(x=y_tst)
+
+ax2.set_title('Test Data')
+ax2.set_xticklabels(['is not person','is person'])
+
+plt.show()
 
 #两个的dataset的比例非常接近，不一定，因为准确率，https://www.cnblogs.com/zhizhan/p/4870429.html
 
@@ -120,8 +120,8 @@ image_test_isPerson = image_test['is_person']
 #
 # (a) Your answer goes here:
 
-#because the probability of "is not person" is higher than "is person", so the baseline is to always
-#classify the object is "is not person"
+# because the probability of "is not person" is higher than "is person", so the baseline is to always
+# classify the object is "is not person"
 
 isNotPerson_data = image_test_isPerson[image_test_isPerson == 0]
 
@@ -136,13 +136,13 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #   (b) [Text] Comment on the performance of the Logistic Regressor in comparison with the baseline model.
 #   (c) [Code] Visualise the errors using an appropriate method to justify your answer to (c).
 #   (d) [Text] Referring back to the observations in Q1.1, and assuming that we know that the features should be informative, why do you think this may be happening?
-# lr = LogisticRegression(solver='lbfgs')
-# lr.fit(image_train_features, image_train_isPerson)
+lr = LogisticRegression(solver='lbfgs')
+lr.fit(image_train_features, image_train_isPerson)
 # test_predit = lr.predict(X=image_test_features)
 # print('Classification accuracy on test set: {:.3f}'.format(lr.score(image_test_features, image_test_isPerson)))
-
-#和baseline一样
-
+#
+# 和baseline一样
+#
 # cm = confusion_matrix(image_test_isPerson, test_predit)
 #
 # print(cm)
@@ -161,7 +161,7 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #
 # plt.show()
 
-#
+
 
 
 # ========== Question 2.3 --- [13 marks] ==========
@@ -172,37 +172,37 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #   (c) [Code] Now Train a Logistic Regressor on the transformed training set, keeping the same settings as in the previous question. Report the classification accuracy on the testing set and visualise the errors in a similar way to Q2.2(d).
 #   (d) [Text] Finally comment on the comparative performance with Q2.2.
 
-# ss = StandardScaler().fit(image_train_features)
-# train_x = ss.transform(image_train_features)
-# test_x = ss.transform(image_test_features)
-#
-# lr1 = LogisticRegression(solver='lbfgs')
-# lr1.fit(train_x, image_train_isPerson)
-# test_predit1 = lr1.predict(X=test_x)
-# print('Classification accuracy on test set: {:.3f}'.format(lr.score(test_x, image_test_isPerson)))
-#
-# ca = accuracy_score(image_test_isPerson, test_predit1)
-#
-# cm = confusion_matrix(image_test_isPerson, test_predit1)
-#
-# cm_norm = cm/cm.sum(axis=1)[:, np.newaxis]
-#
-#
-# print(cm)
-#
-# plt.figure()
-#
-# plt.subplot(1,1,1)
-#
-# labels = ['not person','is person']
-#
-# sns.heatmap(cm_norm, xticklabels=labels, yticklabels=labels, vmin=0.0, vmax=1.0, annot=True)
-#
-# plt.title('Confusion matrix')
-# plt.ylabel('True label')
-# plt.xlabel('Predicted label')
-#
-# plt.show()
+standardScaler = StandardScaler().fit(image_train_features)
+train_x = standardScaler.transform(image_train_features)
+test_x = standardScaler.transform(image_test_features)
+
+lr1 = LogisticRegression(solver='lbfgs')
+lr1.fit(train_x, image_train_isPerson)
+test_predit1 = lr1.predict(X=test_x)
+print('Classification accuracy on test set: {:.3f}'.format(lr.score(test_x, image_test_isPerson)))
+
+ca = accuracy_score(image_test_isPerson, test_predit1)
+
+cm = confusion_matrix(image_test_isPerson, test_predit1)
+
+cm_norm = cm/cm.sum(axis=1)[:, np.newaxis]
+
+
+print(cm)
+
+plt.figure()
+
+plt.subplot(1,1,1)
+
+labels = ['not person','is person']
+
+sns.heatmap(cm_norm, xticklabels=labels, yticklabels=labels, vmin=0.0, vmax=1.0, annot=True)
+
+plt.title('Confusion matrix')
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
+
+plt.show()
 
 #
 
@@ -220,93 +220,94 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #
 # N.B.: Keep track of the KFold object you created as we will keep using it
 
-#交叉验证能够进行多次训练和验证，而使用测试数据只进行一次验证，交叉验证的准确率更高。
+#交叉验证能够进行多次训练和验证，而使用测试数据只进行一次验证，交叉验证的训练效果更好。
 
 
-# data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Train.csv')
-# train_data = pd.read_csv(data_path,delimiter=',')
-#
-# X_train = train_data.iloc[:,0:500]
-#
-# y_train = train_data['is_person']
-#
-#
-# data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Test.csv')
-# test_data = pd.read_csv(data_path,delimiter=',')
-#
-# X_test = test_data.iloc[:,0:500]
-#
-# y_test = test_data['is_person']
 
-# number = 20
-# splits = 5
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Train.csv')
+train_data = pd.read_csv(data_path,delimiter=',')
+
+X_train = train_data.iloc[:,0:500]
+
+y_train = train_data['is_person']
+
+
+data_path = os.path.join(os.getcwd(), 'datasets', 'Images_B_Test.csv')
+test_data = pd.read_csv(data_path,delimiter=',')
+
+X_test = test_data.iloc[:,0:500]
+
+y_test = test_data['is_person']
+
+number = 20
+splits = 5
+
+
+kf = KFold(n_splits=splits, shuffle=True, random_state=0)
+
+scores = []
+mean_array = []
+std_array = []
+
+Csteps = np.logspace(start=-5, stop=5, num=number)
+
+print(Csteps)
+
+for kf_train_indexes, kf_test_indexes in kf.split(X_train):
+
+    print('kf processing')
+    eachKFScoresDic = []
+    for C in Csteps:
+        lr = LogisticRegression(solver="lbfgs", C=C)
+        lr.fit(X=X_train.loc[kf_train_indexes],y = y_train.loc[kf_train_indexes])
+        lr_score = lr.score(X=X_train.loc[kf_test_indexes], y=y_train.loc[kf_test_indexes])
+        eachKFScoresDic.append(lr_score)
+    scores.append(eachKFScoresDic)
+
+
+
+npScores = np.array(scores).reshape(splits,number)
+
+mean_array = np.mean(npScores,axis=0)
+
+std_array = np.std(npScores,axis=0)
+
+# for column in range(npScores.shape[1]):
+#     values = npScores[:,column]
+#     mean_array.append(np.mean(values))
+#     std_array.append(np.std(values))
+
+print(mean_array)
+print(std_array)
 #
 #
-# kf = KFold(n_splits=splits, shuffle=True, random_state=0)
-#
-# scores = []
-# mean_array = []
-# std_array = []
-#
-# Csteps = np.logspace(start=-5, stop=5, num=20)
-#
-# print(Csteps)
-#
-# for kf_train_indexes, kf_test_indexes in kf.split(X_train):
-#
-#     print('kf processing')
-#     eachKFScoresDic = []
-#     for C in Csteps:
-#         lr = LogisticRegression(solver="lbfgs", C=C)
-#         lr.fit(X=X_train.loc[kf_train_indexes],y = y_train.loc[kf_train_indexes])
-#         lr_score = lr.score(X=X_train.loc[kf_test_indexes], y=y_train.loc[kf_test_indexes])
-#         eachKFScoresDic.append(lr_score)
-#     scores.append(eachKFScoresDic)
-#
-#
-#
-# npScores = np.array(scores).reshape(splits,number)
-#
-# mean_array = np.mean(npScores,axis=0)
-#
-# std_array = np.std(npScores,axis=0)
-#
-# # for column in range(npScores.shape[1]):
-# #     values = npScores[:,column]
-# #     mean_array.append(np.mean(values))
-# #     std_array.append(np.std(values))
-#
-# print(mean_array)
-# print(std_array)
-#
-#
-# plt.figure()
-#
-# # plt.errorbar(x=np.linspace(start=1e-5, stop=1e5, num=20),y=mean_array,yerr=std_array)
-#
-# plt.errorbar(x=Csteps, y=mean_array,yerr=std_array, fmt='o', color='black',ecolor='lightgray',elinewidth=3, capsize=0)
-#
-# plt.xticks(Csteps,rotation=90)
-#
-# plt.semilogx()
-#
-# plt.show()
-#
-# best_accuracy = np.max(mean_array)
-#
-# best_index = np.argwhere(mean_array == best_accuracy)
-#
-# bestC = Csteps[best_index]
-#
-# print(best_accuracy)
-#
-# print(bestC)
-#
-# lr = LogisticRegression(solver="lbfgs", C=bestC[0][0])
-# lr.fit(X=X_train, y=y_train)
-# lr_score = lr.score(X=X_test, y=y_test)
-#
-# print('test scorce:',lr_score)
+plt.figure()
+
+# plt.errorbar(x=np.linspace(start=1e-5, stop=1e5, num=20),y=mean_array,yerr=std_array)
+
+plt.errorbar(x=Csteps, y=mean_array,yerr=std_array, fmt='o', color='black',ecolor='lightgray',elinewidth=3, capsize=0)
+
+plt.xticks(Csteps,rotation=90)
+
+plt.semilogx()
+
+plt.show()
+
+best_accuracy = np.max(mean_array)
+
+best_index = np.argwhere(mean_array == best_accuracy)
+
+bestC = Csteps[best_index]
+
+print(best_accuracy)
+
+print(bestC)
+
+lr = LogisticRegression(solver="lbfgs", C=bestC[0][0])
+lr.fit(X=X_train, y=y_train)
+lr_score = lr.score(X=X_test, y=y_test)
+
+print('test scorce:',lr_score)
 
 
 
@@ -318,26 +319,26 @@ print(isNotPerson_data.count() / image_test_isPerson.count())
 #   (c) [Text] Comment on the discrepancy between training and testing accuracies.
 #   (d) [Code] By using the random forest model display the names of the 10 most important features (in descending order of importance).
 #
-RandomForestClassifier
-#sorted by the contribution of the features, and sklearn have a property called feature_importances and
-#it can output the feature importances array.
+# RandomForestClassifier
+# sorted by the contribution of the features, and sklearn have a property called feature_importances and
+# it can output the feature importances array.
 
-# rf = RandomForestClassifier(n_estimators=500, random_state=42,criterion="entropy")
-# rf.fit(X=X_train,y=y_train)
-# print ("accuracy of training set: ",rf.score(X=X_train, y=y_train))
-# print ("accuracy of test set: ",rf.score(X=X_test, y=y_test))
+rf = RandomForestClassifier(n_estimators=500, random_state=42,criterion="entropy")
+rf.fit(X=X_train,y=y_train)
+print ("accuracy of training set: ",rf.score(X=X_train, y=y_train))
+print ("accuracy of test set: ",rf.score(X=X_test, y=y_test))
 
-#对于随机森林，重新检验训练数据，并且对于得分是1并不惊讶。对比与Logisitic Regression,随机森林的准确率要稍微高一点，但是并不多
+# 对于随机森林，重新检验训练数据，并且对于得分是1并不惊讶。对比与Logisitic Regression,随机森林的准确率要稍微高一点，但是并不多
 
-# print(rf.feature_importances_)
-#
-# dataFrame = pd.DataFrame(X_train.columns,columns=['featureName'])
-# dataFrame['importants'] = rf.feature_importances_
-#
-# sort_dataFrame = dataFrame.sort_values('importants',ascending=False)
-#
-# for i in range(10):
-#     print(sort_dataFrame.iloc[i,0])
+print(rf.feature_importances_)
+
+dataFrame = pd.DataFrame(X_train.columns,columns=['featureName'])
+dataFrame['importants'] = rf.feature_importances_
+
+sort_dataFrame = dataFrame.sort_values('importants',ascending=False)
+
+for i in range(10):
+    print(sort_dataFrame.iloc[i,0])
 
 
 
@@ -349,28 +350,28 @@ RandomForestClassifier
 #   (b) [Text] Explain (intuitively) the shape of the decision boundary for each classifier (i.e. comment on what aspect of the kernel gives rise to it). Use this to comment on how it relates to classification accuracy.
 #
 
-# X_dim21 = X_train['dim21']
-# X_dim51 = X_train['dim51']
-# y_svm = y_train
-#
-# X_21_and_51 = np.array([X_dim21,X_dim51])
-# X_21_and_51 = X_21_and_51.T
-#
-# print(X_21_and_51)
-#
-#
-# svc_linear = SVC(kernel="linear",C=1).fit(X=X_21_and_51, y=y_svm)
-# svc_rbf = SVC(kernel="rbf",gamma='auto',C=1).fit(X=X_21_and_51, y=y_svm)
-# svc_poly = SVC(kernel="poly",degree=2,C=1).fit(X=X_21_and_51, y=y_svm)
-#
-# print(svc_linear.score(X=X_21_and_51, y=y_svm))
-# print(svc_rbf.score(X=X_21_and_51, y=y_svm))
-# print(svc_poly.score(X=X_21_and_51, y=y_svm))
-#
-# plotter.plot_SVM_DecisionBoundary(clfs=[svc_linear,svc_rbf,svc_poly],X=X_21_and_51,y=y_svm,
-#                                   title=['linear','rbf','polynomial'],
-#                                   labels=['dim21','dim51'])
-# plt.show()
+X_dim21 = X_train['dim21']
+X_dim51 = X_train['dim51']
+y_svm = y_train
+
+X_21_and_51 = np.array([X_dim21,X_dim51])
+X_21_and_51 = X_21_and_51.T
+
+print(X_21_and_51)
+
+
+svc_linear = SVC(kernel="linear",C=1).fit(X=X_21_and_51, y=y_svm)
+svc_rbf = SVC(kernel="rbf",gamma='auto',C=1).fit(X=X_21_and_51, y=y_svm)
+svc_poly = SVC(kernel="poly",degree=2,C=1).fit(X=X_21_and_51, y=y_svm)
+
+print(svc_linear.score(X=X_21_and_51, y=y_svm))
+print(svc_rbf.score(X=X_21_and_51, y=y_svm))
+print(svc_poly.score(X=X_21_and_51, y=y_svm))
+
+plotter.plot_SVM_DecisionBoundary(clfs=[svc_linear,svc_rbf,svc_poly],X=X_21_and_51,y=y_svm,
+                                  title=['linear','rbf','polynomial'],
+                                  labels=['dim21','dim51'])
+plt.show()
 
 
 #核函数
@@ -384,48 +385,48 @@ RandomForestClassifier
 #   (c) [Code] Retrain the (polynomial-kernel) SVC using the optimal parameters found in (b) and report its accuracy on the Testing set.
 #   (d) [Text] Explain the results relative to the Logistic Classifier.
 
-# step_number = 6
-# degreeStepNumber = 5
-#
-# accuracy_array = np.ndarray((degreeStepNumber,step_number))
-# print(accuracy_array.shape)
-#
-# stepArray = np.logspace(start=-2, stop=3, num=step_number)
-#
-# degreeStepArray = np.linspace(start=1, stop=5, num=degreeStepNumber)
-#
-#
-#
-# C_index = 0
-# for C in stepArray:
-#     degree_index = 0
-#     for degree in degreeStepArray:
-#         scores = []
-#         for kf_train_indexes, kf_test_indexes in kf.split(X_train):
-#             svc_poly = SVC(kernel="poly", degree=degree, C=C)
-#             svc_poly.fit(X=X_train.loc[kf_train_indexes],y = y_train.loc[kf_train_indexes])
-#             svc_score = svc_poly.score(X=X_train.loc[kf_test_indexes], y=y_train.loc[kf_test_indexes])
-#             scores.append(svc_score)
-#         mean_score = np.mean(scores,axis=0)
-#         accuracy_array[degree_index,C_index] = mean_score
-#         degree_index+=1
-#         print()
-#     C_index +=1
-#
-# plt.figure()
-#
-# sns.heatmap(accuracy_array,xticklabels=stepArray,yticklabels=degreeStepArray,vmin=0.,vmax=1.,annot=True)
-#
-# plt.xlabel('C')
-# plt.ylabel('degree')
-# # plt.semilogx()
-# plt.show()
+step_number = 6
+degreeStepNumber = 5
 
-# svc_poly = SVC(kernel="poly", degree=1, C=1.0)
-# svc_poly.fit(X=X_train, y=y_train)
-# svc_score = svc_poly.score(X=X_test, y=y_test)
-#
-# print("Accuracy of svc_poly:",svc_score)
+accuracy_array = np.ndarray((degreeStepNumber,step_number))
+print(accuracy_array.shape)
+
+stepArray = np.logspace(start=-2, stop=3, num=step_number)
+
+degreeStepArray = np.linspace(start=1, stop=5, num=degreeStepNumber)
+
+
+
+C_index = 0
+for C in stepArray:
+    degree_index = 0
+    for degree in degreeStepArray:
+        scores = []
+        for kf_train_indexes, kf_test_indexes in kf.split(X_train):
+            svc_poly = SVC(kernel="poly", degree=degree, C=C)
+            svc_poly.fit(X=X_train.loc[kf_train_indexes],y = y_train.loc[kf_train_indexes])
+            svc_score = svc_poly.score(X=X_train.loc[kf_test_indexes], y=y_train.loc[kf_test_indexes])
+            scores.append(svc_score)
+        mean_score = np.mean(scores,axis=0)
+        accuracy_array[degree_index,C_index] = mean_score
+        degree_index+=1
+        print()
+    C_index +=1
+
+plt.figure()
+
+sns.heatmap(accuracy_array,xticklabels=stepArray,yticklabels=degreeStepArray,vmin=0.,vmax=1.,annot=True)
+
+plt.xlabel('C')
+plt.ylabel('degree')
+# plt.semilogx()
+plt.show()
+
+svc_poly = SVC(kernel="poly", degree=1, C=1.0)
+svc_poly.fit(X=X_train, y=y_train)
+svc_score = svc_poly.score(X=X_test, y=y_test)
+
+print("Accuracy of svc_poly:",svc_score)
 
 #########
 
@@ -460,7 +461,7 @@ y_test = test_data['is_person']
 
 
 
-Csteps = np.logspace(start=-5, stop=5, num=100)
+Csteps = np.logspace(start=-5, stop=5, num=20)
 
 scores = []
 
